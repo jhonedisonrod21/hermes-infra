@@ -36,4 +36,19 @@ subprojects {
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
     }
+
+    // Arranque local desde IntelliJ: la tarea 'bootRun' (grupo "application") de
+    // cada servicio queda preconfigurada con el perfil 'local' y el entorno que
+    // usa hermes-stack.sh. Ejecutar primero hermes-config-server:bootRun.
+    // (En la librería hermes-shared esta tarea existe pero no se usa.)
+    tasks.matching { it.name == 'bootRun' }.configureEach {
+        environment 'SPRING_PROFILES_ACTIVE', 'local'
+        environment 'CONFIG_SERVER_URL', 'http://localhost:8888'
+        environment 'SPRING_CONFIG_IMPORT_CONFIGSERVER_URL', 'http://localhost:8888'
+        environment 'HERMES_AUTH_ISSUER_URI', 'http://127.0.0.1:5173/auth'
+        environment 'HERMES_AUTH_PUBLIC_BASE_URL', 'http://127.0.0.1:5173/auth'
+        environment 'HERMES_AUTH_GATEWAY_BASE_URL', 'http://127.0.0.1:8080/auth'
+        environment 'HERMES_AUTH_JWK_SET_URI', 'http://127.0.0.1:9000/oauth2/jwks'
+        environment 'HERMES_GATEWAY_BASE_URL', 'http://127.0.0.1:8080'
+    }
 }
