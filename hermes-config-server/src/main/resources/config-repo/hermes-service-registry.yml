@@ -1,0 +1,11 @@
+server:
+  port: ${HERMES_SERVICE_REGISTRY_PORT:8761}
+
+spring:
+  application:
+    name: hermes-service-registry
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false

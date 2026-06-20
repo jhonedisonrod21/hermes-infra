@@ -1,0 +1,28 @@
+# Perfil DEV del Web BFF. Cookie segura (HTTPS), secreto de cliente y URLs
+# públicas obligatorias (fail-fast).
+server:
+  servlet:
+    session:
+      cookie:
+        secure: ${HERMES_WEB_BFF_COOKIE_SECURE:true}
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          hermes-web-client:
+            client-secret: ${HERMES_WEB_CLIENT_SECRET}
+            redirect-uri: ${HERMES_WEB_BFF_REDIRECT_URI}
+        provider:
+          hermes-auth:
+            authorization-uri: ${HERMES_AUTH_PUBLIC_BASE_URL}/oauth2/authorize
+            token-uri: ${HERMES_AUTH_GATEWAY_BASE_URL}/oauth2/token
+            jwk-set-uri: ${HERMES_AUTH_JWK_SET_URI}
+
+hermes:
+  web:
+    frontend-url: ${HERMES_WEB_FRONTEND_URL}
+    allowed-origins: ${HERMES_WEB_ALLOWED_ORIGINS}
+  gateway:
+    base-url: ${HERMES_GATEWAY_BASE_URL}

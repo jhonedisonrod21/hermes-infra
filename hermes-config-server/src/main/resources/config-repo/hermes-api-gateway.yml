@@ -1,0 +1,75 @@
+server:
+  port: ${HERMES_API_GATEWAY_PORT:8080}
+
+spring:
+  application:
+    name: hermes-api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: false
+              lower-case-service-id: true
+          routes:
+            - id: hermes-auth-server
+              uri: lb://hermes-auth-server
+              predicates:
+                - Path=/auth/**
+              filters:
+                - StripPrefix=1
+            - id: hermes-web-bff
+              uri: lb://hermes-web-bff
+              predicates:
+                - Path=/bff/**
+              filters:
+                - StripPrefix=1
+            - id: hermes-identity-service
+              uri: lb://hermes-identity-service
+              predicates:
+                - Path=/identity/**
+              filters:
+                - StripPrefix=1
+            - id: hermes-tenant-service
+              uri: lb://hermes-tenant-service
+              predicates:
+                - Path=/tenant/**
+              filters:
+                - StripPrefix=1
+            - id: hermes-catalog-service
+              uri: lb://hermes-catalog-service
+              predicates:
+                - Path=/catalog/**
+              filters:
+                - StripPrefix=1
+            - id: hermes-scheduling-service
+              uri: lb://hermes-scheduling-service
+              predicates:
+                - Path=/scheduling/**
+              filters:
+                - StripPrefix=1
+            - id: hermes-payment-service
+              uri: lb://hermes-payment-service
+              predicates:
+                - Path=/payment/**
+              filters:
+                - StripPrefix=1
+            - id: hermes-notification-service
+              uri: lb://hermes-notification-service
+              predicates:
+                - Path=/notification/**
+              filters:
+                - StripPrefix=1
+            - id: hermes-integration-hub-service
+              uri: lb://hermes-integration-hub-service
+              predicates:
+                - Path=/integration/**
+              filters:
+                - StripPrefix=1
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${hermes.auth.issuer-uri}
+          jwk-set-uri: ${HERMES_AUTH_JWK_SET_URI:http://127.0.0.1:9000/oauth2/jwks}

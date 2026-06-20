@@ -1,0 +1,38 @@
+server:
+  port: ${HERMES_INTEGRATION_HUB_SERVICE_PORT:8086}
+
+spring:
+  application:
+    name: hermes-integration-hub-service
+  datasource:
+    url: ${HERMES_INTEGRATION_HUB_DATASOURCE_URL:${HERMES_DATASOURCE_URL:jdbc:mysql://localhost:3306/HERMES_CALENDAR}}
+    username: ${HERMES_INTEGRATION_HUB_DATASOURCE_USERNAME:${HERMES_DATASOURCE_USERNAME:hermes_app}}
+    password: ${HERMES_INTEGRATION_HUB_DATASOURCE_PASSWORD:${HERMES_DATASOURCE_PASSWORD:hermes_app_local}}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: hermes-integration-hub-db-pool
+      maximum-pool-size: ${HERMES_INTEGRATION_HUB_DATASOURCE_MAX_POOL_SIZE:${HERMES_DATASOURCE_MAX_POOL_SIZE:10}}
+      minimum-idle: ${HERMES_INTEGRATION_HUB_DATASOURCE_MIN_IDLE:${HERMES_DATASOURCE_MIN_IDLE:2}}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: ${HERMES_JPA_FORMAT_SQL:false}
+        type.preferred_uuid_jdbc_type: CHAR
+  flyway:
+    enabled: ${HERMES_INTEGRATION_HUB_FLYWAY_ENABLED:${HERMES_FLYWAY_ENABLED:true}}
+    locations: ${HERMES_INTEGRATION_HUB_FLYWAY_LOCATIONS:${HERMES_FLYWAY_LOCATIONS:classpath:db/migration}}
+    table: ${HERMES_INTEGRATION_HUB_FLYWAY_TABLE:flyway_schema_history_integration_hub}
+    create-schemas: false
+    validate-on-migrate: ${HERMES_INTEGRATION_HUB_FLYWAY_VALIDATE_ON_MIGRATE:${HERMES_FLYWAY_VALIDATE_ON_MIGRATE:true}}
+    clean-disabled: ${HERMES_INTEGRATION_HUB_FLYWAY_CLEAN_DISABLED:${HERMES_FLYWAY_CLEAN_DISABLED:true}}
+    baseline-on-migrate: ${HERMES_INTEGRATION_HUB_FLYWAY_BASELINE_ON_MIGRATE:${HERMES_FLYWAY_BASELINE_ON_MIGRATE:true}}
+    baseline-version: ${HERMES_INTEGRATION_HUB_FLYWAY_BASELINE_VERSION:${HERMES_FLYWAY_BASELINE_VERSION:0}}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${HERMES_AUTH_ISSUER_URI:http://127.0.0.1:5173/auth}
+          jwk-set-uri: ${HERMES_AUTH_JWK_SET_URI:http://127.0.0.1:9000/oauth2/jwks}

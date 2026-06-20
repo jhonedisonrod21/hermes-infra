@@ -1,0 +1,41 @@
+server:
+  port: ${HERMES_WEB_BFF_PORT:8090}
+  servlet:
+    session:
+      cookie:
+        name: HERMES_BFF_SESSION
+        http-only: true
+        same-site: lax
+        secure: ${HERMES_WEB_BFF_COOKIE_SECURE:false}
+
+spring:
+  application:
+    name: hermes-web-bff
+  security:
+    oauth2:
+      client:
+        registration:
+          hermes-web-client:
+            provider: hermes-auth
+            client-id: ${HERMES_WEB_CLIENT_ID:hermes-web-client}
+            client-secret: ${HERMES_WEB_CLIENT_SECRET:hermes-web-secret}
+            authorization-grant-type: authorization_code
+            redirect-uri: ${HERMES_WEB_BFF_REDIRECT_URI:http://127.0.0.1:5173/bff/login/oauth2/code/hermes-web-client}
+            scope:
+              - openid
+              - profile
+              - calendar.read
+              - calendar.write
+        provider:
+          hermes-auth:
+            authorization-uri: ${HERMES_AUTH_PUBLIC_BASE_URL:http://127.0.0.1:5173/auth}/oauth2/authorize
+            token-uri: ${HERMES_AUTH_GATEWAY_BASE_URL:http://127.0.0.1:8080/auth}/oauth2/token
+            jwk-set-uri: ${HERMES_AUTH_JWK_SET_URI:http://127.0.0.1:9000/oauth2/jwks}
+            user-name-attribute: sub
+
+hermes:
+  web:
+    frontend-url: ${HERMES_WEB_FRONTEND_URL:http://127.0.0.1:5173}
+    allowed-origins: ${HERMES_WEB_ALLOWED_ORIGINS:http://127.0.0.1:5173}
+  gateway:
+    base-url: ${HERMES_GATEWAY_BASE_URL:http://127.0.0.1:8080}

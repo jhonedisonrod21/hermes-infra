@@ -1,0 +1,32 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8761/eureka/}
+    registry-fetch-interval-seconds: ${EUREKA_REGISTRY_FETCH_INTERVAL_SECONDS:5}
+  instance:
+    lease-renewal-interval-in-seconds: ${EUREKA_LEASE_RENEWAL_INTERVAL_SECONDS:5}
+    lease-expiration-duration-in-seconds: ${EUREKA_LEASE_EXPIRATION_DURATION_SECONDS:15}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:health,info}
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: ${MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS:when_authorized}
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+hermes:
+  auth:
+    issuer-uri: ${HERMES_AUTH_ISSUER_URI:http://127.0.0.1:5173/auth}
+    public-base-url: ${HERMES_AUTH_PUBLIC_BASE_URL:http://127.0.0.1:5173/auth}
+    gateway-base-url: ${HERMES_AUTH_GATEWAY_BASE_URL:http://127.0.0.1:8080/auth}
+  internal:
+    api-key: ${HERMES_INTERNAL_API_KEY:local-dev-internal-key}

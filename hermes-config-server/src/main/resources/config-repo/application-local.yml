@@ -1,0 +1,32 @@
+# =====================================================================
+# Perfil LOCAL  (SPRING_PROFILES_ACTIVE=local)
+# ---------------------------------------------------------------------
+# Ejecución en la máquina del desarrollador con `./gradlew startLocalServices`
+# (los servicios corren como jars en el host).
+#
+# Los valores de conexión ya viven en los archivos base de cada servicio y
+# apuntan a los contenedores locales. Una base MySQL por contexto acotado:
+#   * IAM       -> jdbc:mysql://localhost:3306/HERMES_IAM       (auth, identity, tenant)
+#   * Calendario-> jdbc:mysql://localhost:3306/HERMES_CALENDAR  (catalog, scheduling, integration-hub)
+#   * Comercio  -> jdbc:mysql://localhost:3306/HERMES_COMMERCE  (payment, notification)
+#   * SonarQube -> http://localhost:9001  (containers/sonarqube; build-time con
+#                  `./gradlew sonar`, no es runtime)
+#
+# Aquí solo se añaden comodidades de desarrollo (más detalle/observabilidad).
+# =====================================================================
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+
+management:
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    co.com.hermes: DEBUG
+    org.springframework.security: INFO

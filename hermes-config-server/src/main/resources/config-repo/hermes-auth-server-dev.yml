@@ -1,0 +1,20 @@
+# Perfil DEV del Auth Server. Secretos obligatorios (sin default -> fail-fast).
+spring:
+  datasource:
+    url: ${HERMES_AUTH_DATASOURCE_URL:${HERMES_DATASOURCE_URL}}
+    username: ${HERMES_AUTH_DATASOURCE_USERNAME:${HERMES_DATASOURCE_USERNAME:hermes_app}}
+    password: ${HERMES_AUTH_DATASOURCE_PASSWORD:${HERMES_DATASOURCE_PASSWORD}}
+
+hermes:
+  auth:
+    jwk:
+      # Par RSA persistente e idéntico entre instancias (clave de firma de los JWT).
+      public-key-pem: ${HERMES_AUTH_JWK_PUBLIC_KEY_PEM}
+      private-key-pem: ${HERMES_AUTH_JWK_PRIVATE_KEY_PEM}
+  identity:
+    internal-api-key: ${HERMES_INTERNAL_API_KEY}
+  oauth:
+    web-client:
+      # Debe ser un secreto CODIFICADO, p.ej. {bcrypt}$2a$10$...  (no {noop}).
+      client-secret: ${HERMES_WEB_CLIENT_SECRET}
+      redirect-uris: ${HERMES_WEB_CLIENT_REDIRECT_URIS}

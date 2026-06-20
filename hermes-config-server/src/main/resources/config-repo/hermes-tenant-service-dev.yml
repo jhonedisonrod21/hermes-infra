@@ -1,0 +1,10 @@
+# Perfil DEV de Tenant. Datasource y clave interna obligatorios (fail-fast).
+spring:
+  datasource:
+    url: ${HERMES_TENANT_DATASOURCE_URL:${HERMES_DATASOURCE_URL}}
+    username: ${HERMES_TENANT_DATASOURCE_USERNAME:${HERMES_DATASOURCE_USERNAME:hermes_app}}
+    password: ${HERMES_TENANT_DATASOURCE_PASSWORD:${HERMES_DATASOURCE_PASSWORD}}
+
+hermes:
+  internal:
+    api-key: ${HERMES_INTERNAL_API_KEY}

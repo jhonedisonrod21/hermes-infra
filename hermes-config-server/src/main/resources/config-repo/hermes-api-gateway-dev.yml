@@ -1,0 +1,8 @@
+# Perfil DEV del API Gateway. Validación de JWT contra el issuer real (fail-fast).
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${HERMES_AUTH_ISSUER_URI}
+          jwk-set-uri: ${HERMES_AUTH_JWK_SET_URI}

@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: hermes-web-bff
+  config:
+    import: optional:configserver:${SPRING_CONFIG_IMPORT_CONFIGSERVER_URL:http://localhost:8888}

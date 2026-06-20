@@ -1,0 +1,39 @@
+// Convenciones comunes a los módulos de este repositorio.
+// Se aplica con `apply from: "${rootDir}/gradle/common-conventions.gradle"`.
+// Requiere group/version/javaVersion/springCloudVersion en gradle.properties.
+
+allprojects {
+    group = "${group}"
+    version = "${version}"
+
+    repositories {
+        mavenLocal()   // resuelve co.com.hermes.calendar:hermes-shared publicado localmente
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(Integer.parseInt("${javaVersion}"))
+        }
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+}

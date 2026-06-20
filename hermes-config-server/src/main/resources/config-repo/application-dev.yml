@@ -1,0 +1,33 @@
+# =====================================================================
+# Perfil DEV  (SPRING_PROFILES_ACTIVE=dev)
+# ---------------------------------------------------------------------
+# Despliegue inicial en la nube. Toda la infraestructura se inyecta por
+# variables de entorno SIN valores por defecto: si falta una, el servicio
+# NO arranca (fail-fast) en lugar de caer a un valor local inseguro.
+#
+# Ajustes transversales a todos los servicios. Los secretos propios de cada
+# servicio se endurecen en su respectivo {servicio}-dev.yml (mayor precedencia).
+# =====================================================================
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE}        # p.ej. http://eureka.hermes.internal:8761/eureka/
+
+hermes:
+  auth:
+    issuer-uri: ${HERMES_AUTH_ISSUER_URI}         # p.ej. https://auth.hermes.cloud/auth
+    public-base-url: ${HERMES_AUTH_PUBLIC_BASE_URL}
+    gateway-base-url: ${HERMES_AUTH_GATEWAY_BASE_URL}
+  internal:
+    api-key: ${HERMES_INTERNAL_API_KEY}
+
+management:
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  level:
+    root: INFO
+    co.com.hermes: INFO

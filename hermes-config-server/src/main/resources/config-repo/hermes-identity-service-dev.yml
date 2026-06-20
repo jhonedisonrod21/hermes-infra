@@ -1,0 +1,12 @@
+# Perfil DEV de Identity. Datasource y clave interna obligatorios (fail-fast).
+spring:
+  datasource:
+    url: ${HERMES_IDENTITY_DATASOURCE_URL:${HERMES_DATASOURCE_URL}}
+    username: ${HERMES_IDENTITY_DATASOURCE_USERNAME:${HERMES_DATASOURCE_USERNAME:hermes_app}}
+    password: ${HERMES_IDENTITY_DATASOURCE_PASSWORD:${HERMES_DATASOURCE_PASSWORD}}
+
+hermes:
+  internal:
+    api-key: ${HERMES_INTERNAL_API_KEY}
+  registration:
+    tenant-base-url: ${HERMES_TENANT_BASE_URL:http://hermes-tenant-service}
