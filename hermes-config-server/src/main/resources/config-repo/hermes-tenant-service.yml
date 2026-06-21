@@ -39,4 +39,4 @@ spring:
 
 hermes:
   internal:
-    api-key: ${HERMES_INTERNAL_API_KEY:local-dev-internal-key}
+    api-key: ${HERMES_INTERNAL_API_KEY}

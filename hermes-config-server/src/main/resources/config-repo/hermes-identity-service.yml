@@ -39,6 +39,4 @@ spring:
 
 hermes:
   internal:
-    api-key: ${HERMES_INTERNAL_API_KEY:local-dev-internal-key}
-  registration:
-    tenant-base-url: ${HERMES_TENANT_BASE_URL:http://hermes-tenant-service}
+    api-key: ${HERMES_INTERNAL_API_KEY}

@@ -11,7 +11,11 @@ management:
   endpoints:
     web:
       exposure:
-        include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:health,info}
+        # metrics/prometheus quedan accesibles solo intra-clúster (el gateway hace denyAll de /*/actuator/**).
+        include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:health,info,metrics,prometheus}
+  tracing:
+    sampling:
+      probability: ${HERMES_TRACING_SAMPLING_PROBABILITY:0.1}
   endpoint:
     health:
       probes:
@@ -29,4 +33,6 @@ hermes:
     public-base-url: ${HERMES_AUTH_PUBLIC_BASE_URL:http://127.0.0.1:5173/auth}
     gateway-base-url: ${HERMES_AUTH_GATEWAY_BASE_URL:http://127.0.0.1:8080/auth}
   internal:
-    api-key: ${HERMES_INTERNAL_API_KEY:local-dev-internal-key}
+    # Sin valor por defecto: un arranque sin secreto explícito falla (fail-fast).
+    # El valor de conveniencia para local vive en application-local.yml.
+    api-key: ${HERMES_INTERNAL_API_KEY}

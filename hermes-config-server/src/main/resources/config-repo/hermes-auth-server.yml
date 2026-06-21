@@ -42,9 +42,10 @@ hermes:
   identity:
     base-url: ${HERMES_IDENTITY_BASE_URL:http://hermes-identity-service}
     tenant-base-url: ${HERMES_TENANT_BASE_URL:http://hermes-tenant-service}
-    internal-api-key: ${HERMES_INTERNAL_API_KEY:local-dev-internal-key}
+    internal-api-key: ${HERMES_INTERNAL_API_KEY}
   oauth:
     web-client:
       client-id: ${HERMES_WEB_CLIENT_ID:hermes-web-client}
-      client-secret: ${HERMES_WEB_CLIENT_SECRET:{noop}hermes-web-secret}
+      # Secreto CODIFICADO ({bcrypt}...). Sin default -> fail-fast; conveniencia local en application-local.yml.
+      client-secret: ${HERMES_WEB_CLIENT_SECRET}
       redirect-uris: ${HERMES_WEB_CLIENT_REDIRECT_URIS:http://127.0.0.1:5173/bff/login/oauth2/code/hermes-web-client,https://oauth.pstmn.io/v1/callback}

@@ -19,6 +19,7 @@ public class GatewayIdentityHeaderFilter implements GlobalFilter, Ordered {
     private static final List<String> IDENTITY_HEADERS = List.of(
             "X-Hermes-User-Id",
             "X-Hermes-Username",
+            "X-Hermes-Account-Scope",
             "X-Hermes-Tenant-Id",
             "X-Hermes-Tenant-Slug",
             "X-Hermes-Roles",
@@ -57,6 +58,7 @@ public class GatewayIdentityHeaderFilter implements GlobalFilter, Ordered {
                 .headers(headers -> {
                     headers.set("X-Hermes-User-Id", authentication.getToken().getSubject());
                     setIfPresent(headers, "X-Hermes-Username", authentication.getToken().getClaimAsString("preferred_username"));
+                    setIfPresent(headers, "X-Hermes-Account-Scope", authentication.getToken().getClaimAsString("account_scope"));
                     setIfPresent(headers, "X-Hermes-Tenant-Id", authentication.getToken().getClaimAsString("tenant_id"));
                     setIfPresent(headers, "X-Hermes-Tenant-Slug", authentication.getToken().getClaimAsString("tenant_slug"));
                     headers.set("X-Hermes-Roles", joinClaim(authentication, "roles"));

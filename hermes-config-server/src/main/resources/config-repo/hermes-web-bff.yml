@@ -6,7 +6,8 @@ server:
         name: HERMES_BFF_SESSION
         http-only: true
         same-site: lax
-        secure: ${HERMES_WEB_BFF_COOKIE_SECURE:false}
+        # Default seguro (HTTPS). El perfil local lo baja a false para HTTP.
+        secure: ${HERMES_WEB_BFF_COOKIE_SECURE:true}
 
 spring:
   application:
@@ -18,7 +19,7 @@ spring:
           hermes-web-client:
             provider: hermes-auth
             client-id: ${HERMES_WEB_CLIENT_ID:hermes-web-client}
-            client-secret: ${HERMES_WEB_CLIENT_SECRET:hermes-web-secret}
+            client-secret: ${HERMES_WEB_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             redirect-uri: ${HERMES_WEB_BFF_REDIRECT_URI:http://127.0.0.1:5173/bff/login/oauth2/code/hermes-web-client}
             scope:

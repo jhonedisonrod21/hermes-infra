@@ -20,6 +20,31 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  # Secreto del cliente OAuth en su forma CRUDA para que el BFF lo envíe (solo local).
+  security:
+    oauth2:
+      client:
+        registration:
+          hermes-web-client:
+            client-secret: hermes-web-secret
+
+# Secretos de conveniencia SOLO para local (en los archivos base no hay default -> fail-fast).
+hermes:
+  internal:
+    api-key: local-dev-internal-key
+  identity:
+    internal-api-key: local-dev-internal-key
+  oauth:
+    web-client:
+      # Forma CODIFICADA que almacena el Auth Server ({noop} = sin cifrar, aceptable solo en local).
+      client-secret: '{noop}hermes-web-secret'
+
+# Cookie de sesión del BFF sin Secure (local corre por HTTP).
+server:
+  servlet:
+    session:
+      cookie:
+        secure: false
 
 management:
   endpoint:

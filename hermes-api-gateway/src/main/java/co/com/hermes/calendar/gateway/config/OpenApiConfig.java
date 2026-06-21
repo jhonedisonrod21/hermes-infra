@@ -34,16 +34,16 @@ public class OpenApiConfig {
                 .paths(new Paths()
                         .addPathItem("/auth/**", route("Auth Server route", "Enruta OAuth2/OIDC y login a hermes-auth-server.", false))
                         .addPathItem("/bff/**", route("Web BFF route", "Enruta sesion web, OAuth2 client y API proxy a hermes-web-bff.", false))
-                        .addPathItem("/identity/users/register", route("Registro publico de usuarios", "Permite crear cuenta con correo y password. "
-                                + "Identity aprovisiona el tenant inicial mediante Tenant Service.", false))
-                        .addPathItem("/identity/**", route("Identity Service route", "Enruta operaciones de identidad. Requiere rol OWNER o ADMIN.", true))
-                        .addPathItem("/tenant/**", route("Tenant Service route", "Enruta operaciones de tenants. Requiere permiso tenant:manage.", true))
+                        .addPathItem("/identity/users/register", route("Registro publico de usuarios", "Permite crear una cuenta invitada (GUEST_USER) "
+                                + "con correo y password. La cuenta queda sin tenant; unirse o crear una organizacion es un paso aparte.", false))
+                        .addPathItem("/identity/**", route("Identity Service route", "Enruta operaciones de identidad. Requiere rol SYSTEM_ADMIN o TENANT_ADMIN.", true))
+                        .addPathItem("/tenant/**", route("Tenant Service route", "Enruta operaciones de tenants. Requiere rol SYSTEM_ADMIN o TENANT_ADMIN.", true))
                         .addPathItem("/catalog/**", route("Catalog Service route", "Enruta categorias, productos y servicios agendables por tenant. "
-                                + "Requiere rol OWNER o ADMIN.", true))
+                                + "Requiere permiso calendar:read o calendar:write (TENANT_ADMIN o TENANT_PARTNER).", true))
                         .addPathItem("/scheduling/**", route("Scheduling Service route", "Enruta calendario y agenda. Requiere calendar:read o calendar:write.", true))
-                        .addPathItem("/payment/**", route("Payment Service route", "Enruta pagos/facturacion. Requiere billing:read o billing:write.", true))
+                        .addPathItem("/payment/**", route("Payment Service route", "Enruta pagos/facturacion. Requiere rol SYSTEM_ADMIN o TENANT_ADMIN.", true))
                         .addPathItem("/notification/**", route("Notification Service route", "Enruta notificaciones. Requiere token autenticado.", true))
-                        .addPathItem("/integration/**", route("Integration Hub route", "Enruta integraciones externas. Requiere rol OWNER o ADMIN.", true))
+                        .addPathItem("/integration/**", route("Integration Hub route", "Enruta integraciones externas. Requiere rol SYSTEM_ADMIN o TENANT_ADMIN.", true))
                         .addPathItem("/*/internal/**", denied("Rutas internas bloqueadas", "El gateway bloquea cualquier intento de acceder a endpoints internos.")));
     }
 
