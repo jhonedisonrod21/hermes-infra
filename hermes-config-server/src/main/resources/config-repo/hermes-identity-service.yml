@@ -40,3 +40,10 @@ spring:
 hermes:
   internal:
     api-key: ${HERMES_INTERNAL_API_KEY}
+  notification:
+    base-url: ${HERMES_NOTIFICATION_BASE_URL:http://hermes-notification-service}
+  # Restablecimiento de contraseña: URL del front donde el usuario fija la nueva clave + validez del enlace.
+  front:
+    base-url: ${HERMES_FRONT_BASE_URL:http://127.0.0.1:5173}
+  password-reset:
+    ttl-minutes: ${HERMES_PASSWORD_RESET_TTL_MINUTES:30}

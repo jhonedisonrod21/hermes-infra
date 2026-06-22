@@ -59,6 +59,8 @@ public class SecurityConfig {
                         .pathMatchers("/auth/**").permitAll()
                         .pathMatchers("/bff/**").permitAll()
                         .pathMatchers("/identity/users/register").permitAll()
+                        // Restablecimiento de contraseña: público (el usuario no está autenticado).
+                        .pathMatchers("/identity/users/password-reset/**").permitAll()
                         // Gestion de establecimientos y de usuarios: exclusiva del administrador del sistema
                         // (deben ir antes de las reglas generales /tenant/** y /identity/**).
                         .pathMatchers("/tenant/admin/**").hasRole(SYSTEM_ADMIN)
