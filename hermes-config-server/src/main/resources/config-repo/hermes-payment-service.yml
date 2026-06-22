@@ -36,3 +36,13 @@ spring:
         jwt:
           issuer-uri: ${HERMES_AUTH_ISSUER_URI:http://127.0.0.1:5173/auth}
           jwk-set-uri: ${HERMES_AUTH_JWK_SET_URI:http://127.0.0.1:9000/oauth2/jwks}
+
+hermes:
+  payment:
+    # Secreto HMAC del webhook de la pasarela. Sin valor por defecto: un arranque sin secreto explícito
+    # falla (fail-fast). El valor de conveniencia para local vive en application-local.yml.
+    webhook-secret: ${HERMES_PAYMENT_WEBHOOK_SECRET}
+    # URL base a la que se envía al cliente a pagar. En local apunta al simulador de este mismo servicio.
+    checkout-base-url: ${HERMES_PAYMENT_CHECKOUT_BASE_URL:http://127.0.0.1:8084}
+  scheduling:
+    base-url: ${HERMES_SCHEDULING_BASE_URL:http://hermes-scheduling-service}

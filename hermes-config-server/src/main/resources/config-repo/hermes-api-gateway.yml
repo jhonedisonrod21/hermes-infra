@@ -91,6 +91,10 @@ springdoc:
         url: /catalog/v3/api-docs
       - name: scheduling-service
         url: /scheduling/v3/api-docs
+      - name: payment-service
+        url: /payment/v3/api-docs
+      - name: notification-service
+        url: /notification/v3/api-docs
       - name: auth-server
         url: /auth/v3/api-docs
       - name: "zz - gateway (solo rutas y seguridad, sin DTOs)"

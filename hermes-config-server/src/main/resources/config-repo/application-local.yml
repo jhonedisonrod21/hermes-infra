@@ -34,6 +34,8 @@ hermes:
     api-key: local-dev-internal-key
   identity:
     internal-api-key: local-dev-internal-key
+  payment:
+    webhook-secret: local-dev-payment-webhook-secret
   oauth:
     web-client:
       # Forma CODIFICADA que almacena el Auth Server ({noop} = sin cifrar, aceptable solo en local).

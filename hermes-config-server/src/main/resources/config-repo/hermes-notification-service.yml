@@ -36,3 +36,24 @@ spring:
         jwt:
           issuer-uri: ${HERMES_AUTH_ISSUER_URI:http://127.0.0.1:5173/auth}
           jwk-set-uri: ${HERMES_AUTH_JWK_SET_URI:http://127.0.0.1:9000/oauth2/jwks}
+  # Quartz solo programa el latido de despacho; job-store en memoria (la cola + SKIP LOCKED da la
+  # seguridad multi-instancia). El modo clúster con job-store JDBC es endurecimiento posterior.
+  quartz:
+    job-store-type: memory
+  # SMTP de salida. En local apunta a Mailpit (contenedor hermes-containers/mailpit, puerto 1025).
+  mail:
+    host: ${HERMES_MAIL_HOST:localhost}
+    port: ${HERMES_MAIL_PORT:1025}
+    properties:
+      mail:
+        smtp:
+          auth: ${HERMES_MAIL_SMTP_AUTH:false}
+          starttls:
+            enable: ${HERMES_MAIL_SMTP_STARTTLS:false}
+
+hermes:
+  notification:
+    email:
+      from: ${HERMES_NOTIFICATION_EMAIL_FROM:no-reply@hermes.local}
+  identity:
+    base-url: ${HERMES_IDENTITY_BASE_URL:http://hermes-identity-service}

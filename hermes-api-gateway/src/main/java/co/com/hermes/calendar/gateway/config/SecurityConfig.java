@@ -51,7 +51,9 @@ public class SecurityConfig {
                                 "/identity/v3/api-docs/**",
                                 "/tenant/v3/api-docs/**",
                                 "/catalog/v3/api-docs/**",
-                                "/scheduling/v3/api-docs/**"
+                                "/scheduling/v3/api-docs/**",
+                                "/payment/v3/api-docs/**",
+                                "/notification/v3/api-docs/**"
                         ).permitAll()
                         .pathMatchers("/*/internal/**", "/*/actuator/**").denyAll()
                         .pathMatchers("/auth/**").permitAll()
@@ -65,10 +67,19 @@ public class SecurityConfig {
                         .pathMatchers("/identity/**").hasAnyRole(SYSTEM_ADMIN, TENANT_ADMIN)
                         .pathMatchers("/tenant/**").hasAnyRole(SYSTEM_ADMIN, TENANT_ADMIN)
                         .pathMatchers("/integration/**").hasAnyRole(SYSTEM_ADMIN, TENANT_ADMIN)
+                        // Webhook de la pasarela: publico (el proveedor no porta JWT). La autenticidad la da
+                        // la firma HMAC dentro del servicio. Debe ir antes de la regla general /payment/**.
+                        .pathMatchers("/payment/webhooks/**").permitAll()
+                        // Pago de la propia cita: cualquier usuario autenticado (incluido GUEST_USER, que no
+                        // es admin). El servicio comprueba que la cita/pago sean del llamante.
+                        .pathMatchers("/payment/checkout", "/payment/payments/**").authenticated()
+                        // Resto de /payment (administracion/conciliacion): plataforma u organizacion.
                         .pathMatchers("/payment/**").hasAnyRole(SYSTEM_ADMIN, TENANT_ADMIN)
-                        // Busqueda publica del catalogo: cualquier usuario autenticado (incluido GUEST_USER,
-                        // que no tiene calendar:read). Debe ir antes de la regla general /catalog/**.
+                        // Busqueda publica del catalogo y reserva de citas: cualquier usuario autenticado
+                        // (incluido GUEST_USER, que no tiene calendar:read). Antes de las reglas generales.
                         .pathMatchers("/catalog/search").authenticated()
+                        .pathMatchers("/scheduling/offerings/*/availability").authenticated()
+                        .pathMatchers("/scheduling/appointments", "/scheduling/appointments/**").authenticated()
                         // Operacion del tenant (catalogo agendable y agenda): miembros con permisos de
                         // calendario -> TENANT_ADMIN y TENANT_PARTNER. El servicio destino restringe escritura.
                         .pathMatchers("/catalog/**").hasAnyAuthority(CALENDAR_READ, CALENDAR_WRITE)
