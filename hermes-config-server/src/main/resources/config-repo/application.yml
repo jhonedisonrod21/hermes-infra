@@ -36,3 +36,11 @@ hermes:
     # Sin valor por defecto: un arranque sin secreto explícito falla (fail-fast).
     # El valor de conveniencia para local vive en application-local.yml.
     api-key: ${HERMES_INTERNAL_API_KEY}
+
+# Documentacion OpenAPI/Swagger: activa en local (base) como ayuda de desarrollo.
+# El overlay application-dev.yml la deshabilita para el despliegue en la nube.
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

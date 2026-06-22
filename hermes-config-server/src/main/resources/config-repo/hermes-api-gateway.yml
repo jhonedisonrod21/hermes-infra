@@ -73,3 +73,25 @@ spring:
         jwt:
           issuer-uri: ${hermes.auth.issuer-uri}
           jwk-set-uri: ${HERMES_AUTH_JWK_SET_URI:http://127.0.0.1:9000/oauth2/jwks}
+
+# Swagger UI agregado: una sola interfaz en el gateway que reune los specs reales de cada
+# microservicio (con payloads, parametros y esquemas auto-generados desde sus DTOs/anotaciones).
+# Cada url se descarga a traves del propio gateway (StripPrefix=1 -> /<servicio>/v3/api-docs).
+springdoc:
+  swagger-ui:
+    # Grupo abierto por defecto: un servicio con contratos completos (DTOs, params, respuestas),
+    # NO el overview del gateway (que es solo el mapa de rutas/roles y aparece al final).
+    urls-primary-name: identity-service
+    urls:
+      - name: identity-service
+        url: /identity/v3/api-docs
+      - name: tenant-service
+        url: /tenant/v3/api-docs
+      - name: catalog-service
+        url: /catalog/v3/api-docs
+      - name: scheduling-service
+        url: /scheduling/v3/api-docs
+      - name: auth-server
+        url: /auth/v3/api-docs
+      - name: "zz - gateway (solo rutas y seguridad, sin DTOs)"
+        url: /v3/api-docs

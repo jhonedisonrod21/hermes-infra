@@ -15,6 +15,15 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
+/**
+ * Documento OpenAPI propio del gateway: un mapa de RUTAS y SEGURIDAD, no el catalogo de transacciones.
+ *
+ * <p>Los contratos detallados (payloads, parametros, esquemas) los publica cada microservicio en su
+ * propio {@code /v3/api-docs}, y el Swagger UI del gateway los reune como grupos via
+ * {@code springdoc.swagger-ui.urls} (ver hermes-api-gateway.yml). Aqui solo se describe lo transversal
+ * que ningun servicio conoce: que rutas existen, que rol/permiso exige cada una, y como el gateway
+ * deriva del JWT las cabeceras de confianza X-Hermes-* que propaga a los servicios.
+ */
 @Configuration
 public class OpenApiConfig {
 
@@ -22,29 +31,50 @@ public class OpenApiConfig {
     OpenAPI gatewayOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Hermes API Gateway")
+                        .title("Hermes API Gateway - rutas y seguridad")
                         .version("0.0.1")
-                        .description("Puerta de entrada de Hermes. Enruta trafico a microservicios por Eureka, valida JWT "
-                        + "emitidos por Auth Server y propaga headers confiables X-Hermes-* derivados del token."))
+                        .description("""
+                                Puerta de entrada de Hermes. Enruta a microservicios por Eureka, valida los JWT \
+                                emitidos por Auth Server y recorta el prefijo de ruta (StripPrefix=1) antes de reenviar.
+
+                                El cliente solo envia 'Authorization: Bearer <JWT>'. El gateway DERIVA del token y \
+                                propaga a los servicios cabeceras de confianza (descartando cualquier valor que el \
+                                cliente intente enviar): X-Hermes-User-Id, X-Hermes-Username, X-Hermes-Account-Scope, \
+                                X-Hermes-Tenant-Id, X-Hermes-Tenant-Slug, X-Hermes-Roles, X-Hermes-Permissions.
+
+                                Los contratos por endpoint (cuerpos, parametros y esquemas) estan en los grupos por \
+                                servicio del selector de Swagger UI (auth-server, identity-service, tenant-service, \
+                                catalog-service, scheduling-service)."""))
                 .components(new Components()
                         .addSecuritySchemes("bearer-jwt", new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
                                 .bearerFormat("JWT")))
                 .paths(new Paths()
-                        .addPathItem("/auth/**", route("Auth Server route", "Enruta OAuth2/OIDC y login a hermes-auth-server.", false))
-                        .addPathItem("/bff/**", route("Web BFF route", "Enruta sesion web, OAuth2 client y API proxy a hermes-web-bff.", false))
-                        .addPathItem("/identity/users/register", route("Registro publico de usuarios", "Permite crear una cuenta invitada (GUEST_USER) "
-                                + "con correo y password. La cuenta queda sin tenant; unirse o crear una organizacion es un paso aparte.", false))
-                        .addPathItem("/identity/**", route("Identity Service route", "Enruta operaciones de identidad. Requiere rol SYSTEM_ADMIN o TENANT_ADMIN.", true))
-                        .addPathItem("/tenant/**", route("Tenant Service route", "Enruta operaciones de tenants. Requiere rol SYSTEM_ADMIN o TENANT_ADMIN.", true))
-                        .addPathItem("/catalog/**", route("Catalog Service route", "Enruta categorias, productos y servicios agendables por tenant. "
-                                + "Requiere permiso calendar:read o calendar:write (TENANT_ADMIN o TENANT_PARTNER).", true))
-                        .addPathItem("/scheduling/**", route("Scheduling Service route", "Enruta calendario y agenda. Requiere calendar:read o calendar:write.", true))
-                        .addPathItem("/payment/**", route("Payment Service route", "Enruta pagos/facturacion. Requiere rol SYSTEM_ADMIN o TENANT_ADMIN.", true))
-                        .addPathItem("/notification/**", route("Notification Service route", "Enruta notificaciones. Requiere token autenticado.", true))
-                        .addPathItem("/integration/**", route("Integration Hub route", "Enruta integraciones externas. Requiere rol SYSTEM_ADMIN o TENANT_ADMIN.", true))
-                        .addPathItem("/*/internal/**", denied("Rutas internas bloqueadas", "El gateway bloquea cualquier intento de acceder a endpoints internos.")));
+                        .addPathItem("/auth/**", route("Auth Server route", "OAuth2/OIDC y login de sesion. Publico. "
+                                + "Detalle en el grupo 'auth-server'.", false))
+                        .addPathItem("/bff/**", route("Web BFF route", "Sesion web, OAuth2 client y API proxy a hermes-web-bff. Publico.", false))
+                        .addPathItem("/identity/users/register", route("Registro publico de usuarios", "Crea una cuenta invitada "
+                                + "(GUEST_USER). Publico. Detalle en el grupo 'identity-service'.", false))
+                        .addPathItem("/identity/admin/**", route("Identity admin route", "Administracion de usuarios. Requiere rol SYSTEM_ADMIN.", true))
+                        .addPathItem("/identity/**", route("Identity Service route", "Identidad. Requiere SYSTEM_ADMIN o TENANT_ADMIN. "
+                                + "Detalle en el grupo 'identity-service'.", true))
+                        .addPathItem("/tenant/admin/**", route("Tenant admin route", "Administracion de establecimientos y membresias. "
+                                + "Requiere rol SYSTEM_ADMIN.", true))
+                        .addPathItem("/tenant/**", route("Tenant Service route", "Establecimientos. Requiere SYSTEM_ADMIN o TENANT_ADMIN. "
+                                + "Detalle en el grupo 'tenant-service'.", true))
+                        .addPathItem("/catalog/search", route("Catalog search route", "Busqueda publica de servicios activos. "
+                                + "Cualquier usuario autenticado (incluido GUEST_USER).", true))
+                        .addPathItem("/catalog/**", route("Catalog Service route", "Catalogo agendable. Requiere permiso calendar:read o "
+                                + "calendar:write (TENANT_ADMIN o TENANT_PARTNER). Detalle en el grupo 'catalog-service'.", true))
+                        .addPathItem("/scheduling/**", route("Scheduling Service route", "Horario y agenda. Requiere calendar:read o "
+                                + "calendar:write. Detalle en el grupo 'scheduling-service'.", true))
+                        .addPathItem("/payment/**", route("Payment Service route", "Pagos/facturacion. Requiere rol SYSTEM_ADMIN o TENANT_ADMIN.", true))
+                        .addPathItem("/notification/**", route("Notification Service route", "Notificaciones. Requiere token autenticado.", true))
+                        .addPathItem("/integration/**", route("Integration Hub route", "Integraciones externas. Requiere rol SYSTEM_ADMIN o TENANT_ADMIN.", true))
+                        .addPathItem("/*/internal/**", denied("Rutas internas bloqueadas", "El gateway bloquea el acceso externo a "
+                                + "endpoints internos (p. ej. /identity/internal/**, /tenant/internal/**), reservados a la "
+                                + "comunicacion servicio-a-servicio con X-Hermes-Internal-Key.")));
     }
 
     private PathItem route(String summary, String description, boolean secured) {

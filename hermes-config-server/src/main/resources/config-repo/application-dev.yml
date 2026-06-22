@@ -31,3 +31,12 @@ logging:
   level:
     root: INFO
     co.com.hermes: INFO
+
+# La documentacion OpenAPI/Swagger NO se expone en la nube (dev): es una ayuda de desarrollo local.
+# Aplica a TODOS los servicios y al gateway; en dev /v3/api-docs y /swagger-ui quedan deshabilitados
+# (responden 404), de modo que el contrato de la API no se publica en el entorno desplegado.
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

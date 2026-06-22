@@ -44,7 +44,14 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
-                                "/webjars/**"
+                                "/webjars/**",
+                                // Specs OpenAPI de cada microservicio, descargados por Swagger UI a traves del
+                                // gateway para la vista agregada. Solo exponen el contrato (no datos); /auth/**
+                                // ya es publico. Deben ir antes de las reglas /identity/**, /tenant/**, etc.
+                                "/identity/v3/api-docs/**",
+                                "/tenant/v3/api-docs/**",
+                                "/catalog/v3/api-docs/**",
+                                "/scheduling/v3/api-docs/**"
                         ).permitAll()
                         .pathMatchers("/*/internal/**", "/*/actuator/**").denyAll()
                         .pathMatchers("/auth/**").permitAll()
