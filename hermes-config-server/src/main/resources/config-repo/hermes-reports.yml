@@ -1,0 +1,14 @@
+server:
+  port: ${HERMES_REPORTS_PORT:8088}
+
+spring:
+  application:
+    name: hermes-reports
+  # Servicio sin base de datos (stateless): agrega datos de payment/scheduling/catalog
+  # vía sus endpoints internos. No define datasource ni Flyway.
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${HERMES_AUTH_ISSUER_URI:http://127.0.0.1:5173/auth}
+          jwk-set-uri: ${HERMES_AUTH_JWK_SET_URI:http://127.0.0.1:9000/oauth2/jwks}

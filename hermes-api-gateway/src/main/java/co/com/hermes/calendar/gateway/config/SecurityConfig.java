@@ -53,7 +53,8 @@ public class SecurityConfig {
                                 "/catalog/v3/api-docs/**",
                                 "/scheduling/v3/api-docs/**",
                                 "/payment/v3/api-docs/**",
-                                "/notification/v3/api-docs/**"
+                                "/notification/v3/api-docs/**",
+                                "/reports/v3/api-docs/**"
                         ).permitAll()
                         .pathMatchers("/*/internal/**", "/*/actuator/**").denyAll()
                         .pathMatchers("/auth/**").permitAll()
@@ -67,6 +68,10 @@ public class SecurityConfig {
                         // Organizaciones del usuario (selector de tenant): cualquier autenticado, no por rol.
                         // Antes de las reglas /tenant/admin/** y /tenant/**.
                         .pathMatchers("/tenant/me/organizations").authenticated()
+                        // Directorio de usuarios (resolver id -> nombre en pantallas de citas/pagos): operadores
+                        // del tenant (TENANT_ADMIN y TENANT_PARTNER, que portan permisos de calendario). Debe ir
+                        // antes de /identity/admin/** y /identity/**.
+                        .pathMatchers("/identity/directory/**").hasAnyAuthority(CALENDAR_READ, CALENDAR_WRITE)
                         // Gestion de establecimientos y de usuarios: exclusiva del administrador del sistema
                         // (deben ir antes de las reglas generales /tenant/** y /identity/**).
                         .pathMatchers("/tenant/admin/**").hasRole(SYSTEM_ADMIN)
@@ -93,6 +98,9 @@ public class SecurityConfig {
                         // calendario -> TENANT_ADMIN y TENANT_PARTNER. El servicio destino restringe escritura.
                         .pathMatchers("/catalog/**").hasAnyAuthority(CALENDAR_READ, CALENDAR_WRITE)
                         .pathMatchers("/scheduling/**").hasAnyAuthority(CALENDAR_READ, CALENDAR_WRITE)
+                        // Reportes en PDF del establecimiento: operadores del tenant (TENANT_ADMIN/PARTNER).
+                        // El servicio toma el tenant del JWT y valida la pertenencia de cada recurso.
+                        .pathMatchers("/reports/**").hasAnyAuthority(CALENDAR_READ, CALENDAR_WRITE)
                         // Basta token autenticado (incluye al GUEST_USER invitado sin tenant).
                         .pathMatchers("/notification/**").authenticated()
                         .anyExchange().authenticated()

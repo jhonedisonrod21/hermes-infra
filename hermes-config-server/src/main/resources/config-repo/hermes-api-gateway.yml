@@ -67,6 +67,12 @@ spring:
                 - Path=/integration/**
               filters:
                 - StripPrefix=1
+            - id: hermes-reports
+              uri: lb://hermes-reports
+              predicates:
+                - Path=/reports/**
+              filters:
+                - StripPrefix=1
   security:
     oauth2:
       resourceserver:
@@ -95,6 +101,8 @@ springdoc:
         url: /payment/v3/api-docs
       - name: notification-service
         url: /notification/v3/api-docs
+      - name: reports-service
+        url: /reports/v3/api-docs
       - name: auth-server
         url: /auth/v3/api-docs
       - name: "zz - gateway (solo rutas y seguridad, sin DTOs)"
