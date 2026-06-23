@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/session/logout", "/api/**")
+                        .ignoringRequestMatchers("/session/logout", "/session/switch-tenant", "/api/**")
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
