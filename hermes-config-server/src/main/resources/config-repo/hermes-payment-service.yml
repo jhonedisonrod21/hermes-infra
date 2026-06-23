@@ -44,5 +44,13 @@ hermes:
     webhook-secret: ${HERMES_PAYMENT_WEBHOOK_SECRET}
     # URL base a la que se envía al cliente a pagar. En local apunta al simulador de este mismo servicio.
     checkout-base-url: ${HERMES_PAYMENT_CHECKOUT_BASE_URL:http://127.0.0.1:8084}
+    # Clave maestra AES-256 (base64, 32 bytes) para cifrar las credenciales de cobro de cada tenant.
+    # Sin default: fail-fast. El valor local vive en application-local.yml.
+    config-encryption-key: ${HERMES_PAYMENT_CONFIG_ENCRYPTION_KEY}
+    pse:
+      # Simulador de banco PSE (contenedor Python) para desarrollo. En dev/prod apunta al proveedor real.
+      simulator-base-url: ${HERMES_PSE_SIMULATOR_BASE_URL:http://localhost:8099}
+      # URL a la que el banco redirige al cliente tras pagar (informativa; la confirmación real es el webhook).
+      return-url: ${HERMES_PSE_RETURN_URL:http://127.0.0.1:5173/payment/return}
   scheduling:
     base-url: ${HERMES_SCHEDULING_BASE_URL:http://hermes-scheduling-service}

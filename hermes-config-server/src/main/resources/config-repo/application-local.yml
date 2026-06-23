@@ -36,6 +36,8 @@ hermes:
     internal-api-key: local-dev-internal-key
   payment:
     webhook-secret: local-dev-payment-webhook-secret
+    # base64 de "0123456789abcdef0123456789abcdef" (32 bytes). SOLO local.
+    config-encryption-key: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
   oauth:
     web-client:
       # Forma CODIFICADA que almacena el Auth Server ({noop} = sin cifrar, aceptable solo en local).

@@ -61,6 +61,12 @@ public class SecurityConfig {
                         .pathMatchers("/identity/users/register").permitAll()
                         // Restablecimiento de contraseña: público (el usuario no está autenticado).
                         .pathMatchers("/identity/users/password-reset/**").permitAll()
+                        // Perfil propio: cualquier usuario autenticado (incluido GUEST_USER). Antes de las
+                        // reglas de administracion /identity/admin/** y /identity/**.
+                        .pathMatchers("/identity/me", "/identity/me/**").authenticated()
+                        // Organizaciones del usuario (selector de tenant): cualquier autenticado, no por rol.
+                        // Antes de las reglas /tenant/admin/** y /tenant/**.
+                        .pathMatchers("/tenant/me/organizations").authenticated()
                         // Gestion de establecimientos y de usuarios: exclusiva del administrador del sistema
                         // (deben ir antes de las reglas generales /tenant/** y /identity/**).
                         .pathMatchers("/tenant/admin/**").hasRole(SYSTEM_ADMIN)
@@ -74,12 +80,13 @@ public class SecurityConfig {
                         .pathMatchers("/payment/webhooks/**").permitAll()
                         // Pago de la propia cita: cualquier usuario autenticado (incluido GUEST_USER, que no
                         // es admin). El servicio comprueba que la cita/pago sean del llamante.
-                        .pathMatchers("/payment/checkout", "/payment/payments/**").authenticated()
-                        // Resto de /payment (administracion/conciliacion): plataforma u organizacion.
+                        .pathMatchers("/payment/banks", "/payment/checkout", "/payment/payments/**").authenticated()
+                        // Config de cobro del tenant y resto de /payment: plataforma u organizacion.
+                        // El servicio restringe /me/payment-config SOLO a TENANT_ADMIN (method security).
                         .pathMatchers("/payment/**").hasAnyRole(SYSTEM_ADMIN, TENANT_ADMIN)
                         // Busqueda publica del catalogo y reserva de citas: cualquier usuario autenticado
                         // (incluido GUEST_USER, que no tiene calendar:read). Antes de las reglas generales.
-                        .pathMatchers("/catalog/search").authenticated()
+                        .pathMatchers("/catalog/search", "/catalog/search/**").authenticated()
                         .pathMatchers("/scheduling/offerings/*/availability").authenticated()
                         .pathMatchers("/scheduling/appointments", "/scheduling/appointments/**").authenticated()
                         // Operacion del tenant (catalogo agendable y agenda): miembros con permisos de
