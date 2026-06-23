@@ -1,6 +1,28 @@
 plugins {
     id 'org.springframework.boot' version "${springBootVersion}" apply false
     id 'io.spring.dependency-management' version '1.1.7' apply false
+    id 'org.sonarqube' version '6.2.0.5505'
 }
 
 apply from: "${rootDir}/gradle/common-conventions.gradle"
+// Análisis estático y de vulnerabilidades (SonarQube Community, contenedor en
+// hermes-containers/sonarqube, UI http://localhost:9001). Un proyecto Sonar por
+// repositorio; la clave deriva del nombre del repo. El token NO se versiona: se
+// pasa con -Dsonar.token=... o la variable de entorno SONAR_TOKEN.
+//   ./gradlew sonar -Dsonar.token=$SONAR_TOKEN
+sonar {
+    properties {
+        property 'sonar.projectKey', rootProject.name
+        property 'sonar.projectName', rootProject.name
+        property 'sonar.host.url', providers.gradleProperty('sonar.host.url')
+                .orElse(providers.environmentVariable('SONAR_HOST_URL'))
+                .getOrElse('http://localhost:9001')
+        property 'sonar.sourceEncoding', 'UTF-8'
+    }
+}
+
+// Garantiza el bytecode compilado antes de escanear (el analizador Java de Sonar
+// necesita los .class para detectar bugs/vulnerabilidades con fiabilidad).
+tasks.named('sonar') {
+    dependsOn subprojects.collect { it.tasks.named('classes') }
+}
