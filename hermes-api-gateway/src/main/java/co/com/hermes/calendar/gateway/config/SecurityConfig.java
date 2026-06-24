@@ -89,16 +89,21 @@ public class SecurityConfig {
                         // Config de cobro del tenant y resto de /payment: plataforma u organizacion.
                         // El servicio restringe /me/payment-config SOLO a TENANT_ADMIN (method security).
                         .pathMatchers("/payment/**").hasAnyRole(SYSTEM_ADMIN, TENANT_ADMIN)
-                        // Busqueda publica del catalogo y reserva de citas: cualquier usuario autenticado
-                        // (incluido GUEST_USER, que no tiene calendar:read). Antes de las reglas generales.
-                        .pathMatchers("/catalog/search", "/catalog/search/**").authenticated()
+                        // Busqueda y detalle publico del catalogo: vitrina abierta, sin autenticacion.
+                        // Antes de las reglas generales /catalog/**.
+                        .pathMatchers("/catalog/search", "/catalog/search/**").permitAll()
+                        // Reserva de citas: cualquier usuario autenticado (incluido GUEST_USER, sin calendar:read).
                         .pathMatchers("/scheduling/offerings/*/availability").authenticated()
                         .pathMatchers("/scheduling/appointments", "/scheduling/appointments/**").authenticated()
                         // Operacion del tenant (catalogo agendable y agenda): miembros con permisos de
                         // calendario -> TENANT_ADMIN y TENANT_PARTNER. El servicio destino restringe escritura.
                         .pathMatchers("/catalog/**").hasAnyAuthority(CALENDAR_READ, CALENDAR_WRITE)
                         .pathMatchers("/scheduling/**").hasAnyAuthority(CALENDAR_READ, CALENDAR_WRITE)
-                        // Reportes en PDF del establecimiento: operadores del tenant (TENANT_ADMIN/PARTNER).
+                        // Comprobante de pago: cualquier usuario autenticado, incluido el GUEST_USER que pagó
+                        // su propia cita. El servicio valida la pertenencia (dueño del pago o su establecimiento).
+                        // Debe ir antes de la regla general /reports/**.
+                        .pathMatchers("/reports/payments/*/receipt").authenticated()
+                        // Resto de reportes (ventas, estadísticas): operadores del tenant (TENANT_ADMIN/PARTNER).
                         // El servicio toma el tenant del JWT y valida la pertenencia de cada recurso.
                         .pathMatchers("/reports/**").hasAnyAuthority(CALENDAR_READ, CALENDAR_WRITE)
                         // Basta token autenticado (incluye al GUEST_USER invitado sin tenant).
