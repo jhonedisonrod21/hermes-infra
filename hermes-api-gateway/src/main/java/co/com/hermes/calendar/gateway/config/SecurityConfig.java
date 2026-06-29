@@ -134,7 +134,7 @@ public class SecurityConfig {
         Stream<GrantedAuthority> roleAuthorities = nullSafe(roles)
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role));
         Stream<GrantedAuthority> permissionAuthorities = nullSafe(permissions)
-                .map(permission -> new SimpleGrantedAuthority(permission));
+                .map(SimpleGrantedAuthority::new);
 
         return Stream.of(scopeAuthorities, roleAuthorities, permissionAuthorities)
                 .flatMap(stream -> stream)

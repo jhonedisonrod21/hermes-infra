@@ -56,7 +56,7 @@ public class SessionController {
         OAuth2AuthorizedClient client = authorizedClients.loadAuthorizedClient(REGISTRATION_ID, authentication, request);
         if (client != null && client.getAccessToken() != null) {
             Map<String, Object> claims = decodeJwt(client.getAccessToken().getTokenValue());
-            if (claims != null) {
+            if (!claims.isEmpty()) {
                 return fromClaims(claims);
             }
         }
@@ -99,7 +99,7 @@ public class SessionController {
         } catch (WebClientResponseException ex) {
             // Propaga el motivo real del auth-server (403 si no es miembro, 409 si es cuenta de plataforma…).
             throw new ResponseStatusException(HttpStatus.valueOf(ex.getStatusCode().value()), ex.getResponseBodyAsString());
-        } catch (OAuth2AuthorizationException ex) {
+        } catch (OAuth2AuthorizationException _) {
             // El token actual expiró y no se pudo renovar: sesión caducada -> 401 (diálogo de reautenticación).
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session expired");
         }
@@ -117,7 +117,7 @@ public class SessionController {
         authorizedClients.saveAuthorizedClient(swapped, authentication, request, response);
 
         Map<String, Object> claims = decodeJwt(newToken);
-        return claims != null ? fromClaims(claims) : me(authentication, request);
+        return !claims.isEmpty() ? fromClaims(claims) : me(authentication, request);
     }
 
     private static boolean authenticated(Authentication authentication) {
@@ -147,12 +147,12 @@ public class SessionController {
         try {
             String[] parts = token.split("\\.");
             if (parts.length < 2) {
-                return null;
+                return Map.of();
             }
             byte[] payload = Base64.getUrlDecoder().decode(parts[1]);
             return objectMapper.readValue(payload, new TypeReference<Map<String, Object>>() { });
-        } catch (Exception ex) {
-            return null;
+        } catch (Exception _) {
+            return Map.of();
         }
     }
 

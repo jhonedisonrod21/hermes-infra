@@ -16,7 +16,6 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestCustomizers;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.web.SecurityFilterChain;
@@ -37,11 +36,14 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class SecurityConfig {
 
     @Bean
+    // S3330: la cookie CSRF debe ser legible por el JS de la SPA (patrón double-submit; se reenvía en la
+    // cabecera X-XSRF-TOKEN). HttpOnly la rompería. La cookie de sesión HERMES_BFF_SESSION sí es HttpOnly.
+    @SuppressWarnings("java:S3330")
     SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             WebBffProperties properties,
             ClientRegistrationRepository clientRegistrationRepository
-    ) throws Exception {
+    ) {
         DefaultOAuth2AuthorizationRequestResolver authorizationRequestResolver =
                 new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/oauth2/authorization");
         authorizationRequestResolver.setAuthorizationRequestCustomizer(OAuth2AuthorizationRequestCustomizers.withPkce());

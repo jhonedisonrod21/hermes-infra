@@ -30,6 +30,10 @@ spring:
 
 # Secretos de conveniencia SOLO para local (en los archivos base no hay default -> fail-fast).
 hermes:
+  # Credencial del SYSTEM_ADMIN sembrado SOLO en perfil local (LocalAdminSeeder). Fuera de local no se
+  # siembra ninguna cuenta, por eso esta propiedad solo existe aquí (no hay password en el código fuente).
+  local-admin:
+    password: ${HERMES_LOCAL_ADMIN_PASSWORD:admin123}
   internal:
     api-key: local-dev-internal-key
   identity:

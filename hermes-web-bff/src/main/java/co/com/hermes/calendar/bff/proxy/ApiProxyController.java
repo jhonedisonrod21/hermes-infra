@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -23,7 +24,9 @@ public class ApiProxyController {
         this.gatewayWebClient = gatewayWebClient;
     }
 
-    @RequestMapping("/api/**")
+    @RequestMapping(value = "/api/**", method = {
+            RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE
+    })
     public ResponseEntity<byte[]> proxy(
             HttpMethod method,
             HttpServletRequest request,
@@ -46,7 +49,7 @@ public class ApiProxyController {
                                     .headers(entity.getHeaders())
                                     .body(entity.getBody()))))
                     .block();
-        } catch (OAuth2AuthorizationException ex) {
+        } catch (OAuth2AuthorizationException _) {
             // El access token del usuario expiró y no se pudo renovar (refresh inválido/expirado o el
             // auth-server falló al re-emitirlo). Es una expiración de sesión: devolvemos 401 para que el
             // SPA muestre el diálogo de reautenticación, en vez de un 500 tratado como error genérico.

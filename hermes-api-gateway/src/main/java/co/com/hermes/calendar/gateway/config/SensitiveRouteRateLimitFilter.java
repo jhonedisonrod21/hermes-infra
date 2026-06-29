@@ -83,8 +83,9 @@ public class SensitiveRouteRateLimitFilter implements GlobalFilter, Ordered {
         if (forwarded != null && !forwarded.isBlank()) {
             return forwarded.split(",")[0].trim();
         }
-        return request.getRemoteAddress() != null
-                ? request.getRemoteAddress().getAddress().getHostAddress()
+        var remote = request.getRemoteAddress();
+        return remote != null && remote.getAddress() != null
+                ? remote.getAddress().getHostAddress()
                 : "unknown";
     }
 
