@@ -13,6 +13,11 @@ spring:
       pool-name: hermes-scheduling-db-pool
       maximum-pool-size: ${HERMES_SCHEDULING_DATASOURCE_MAX_POOL_SIZE:${HERMES_DATASOURCE_MAX_POOL_SIZE:10}}
       minimum-idle: ${HERMES_SCHEDULING_DATASOURCE_MIN_IDLE:${HERMES_DATASOURCE_MIN_IDLE:2}}
+  servlet:
+    multipart:
+      # Anexos de archivo de las citas (tipo FILE). El límite "duro" lo aplica también el servicio.
+      max-file-size: ${HERMES_STORAGE_MAX_FILE_SIZE:10MB}
+      max-request-size: ${HERMES_STORAGE_MAX_REQUEST_SIZE:12MB}
   jpa:
     open-in-view: false
     hibernate:
@@ -36,3 +41,16 @@ spring:
         jwt:
           issuer-uri: ${HERMES_AUTH_ISSUER_URI:http://127.0.0.1:5173/auth}
           jwk-set-uri: ${HERMES_AUTH_JWK_SET_URI:http://127.0.0.1:9000/oauth2/jwks}
+
+# Almacenamiento de anexos (S3). En AWS basta bucket + región: endpoint/credenciales vacíos hacen que
+# el SDK use S3 real con la cadena de credenciales por defecto (rol IAM). En local, el perfil 'local'
+# sobrescribe endpoint/credenciales para apuntar a MinIO (ver application-local.yml).
+hermes:
+  storage:
+    s3:
+      bucket: ${HERMES_STORAGE_BUCKET:hermes-requirement-files}
+      region: ${HERMES_STORAGE_REGION:us-east-1}
+      endpoint: ${HERMES_STORAGE_ENDPOINT:}
+      access-key: ${HERMES_STORAGE_ACCESS_KEY:}
+      secret-key: ${HERMES_STORAGE_SECRET_KEY:}
+      path-style-access: ${HERMES_STORAGE_PATH_STYLE_ACCESS:false}

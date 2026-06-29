@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -98,6 +99,9 @@ public class SessionController {
         } catch (WebClientResponseException ex) {
             // Propaga el motivo real del auth-server (403 si no es miembro, 409 si es cuenta de plataforma…).
             throw new ResponseStatusException(HttpStatus.valueOf(ex.getStatusCode().value()), ex.getResponseBodyAsString());
+        } catch (OAuth2AuthorizationException ex) {
+            // El token actual expiró y no se pudo renovar: sesión caducada -> 401 (diálogo de reautenticación).
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session expired");
         }
         if (switched == null || switched.get("accessToken") == null) {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Switch did not return a token");

@@ -38,6 +38,18 @@ hermes:
     webhook-secret: local-dev-payment-webhook-secret
     # base64 de "0123456789abcdef0123456789abcdef" (32 bytes). SOLO local.
     config-encryption-key: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+    wompi:
+      # URL base de la pasarela Wompi. En local apunta al simulador de banco (el servicio lo ignora:
+      # para el código es simplemente la URL del proveedor).
+      base-url: ${HERMES_WOMPI_BASE_URL:http://localhost:8099}
+  storage:
+    # Almacén de anexos: en local apunta a MinIO (contenedor S3-compatible). En AWS este bloque no
+    # aplica y el servicio usa S3 real (endpoint/credenciales vacíos -> cadena por defecto del SDK).
+    s3:
+      endpoint: ${HERMES_STORAGE_ENDPOINT:http://localhost:9100}
+      access-key: ${HERMES_STORAGE_ACCESS_KEY:hermes_minio}
+      secret-key: ${HERMES_STORAGE_SECRET_KEY:hermes_minio_local}
+      path-style-access: ${HERMES_STORAGE_PATH_STYLE_ACCESS:true}
   oauth:
     web-client:
       # Forma CODIFICADA que almacena el Auth Server ({noop} = sin cifrar, aceptable solo en local).

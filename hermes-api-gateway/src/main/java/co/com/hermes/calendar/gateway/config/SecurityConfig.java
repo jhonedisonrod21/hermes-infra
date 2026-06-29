@@ -65,6 +65,9 @@ public class SecurityConfig {
                         // Perfil propio: cualquier usuario autenticado (incluido GUEST_USER). Antes de las
                         // reglas de administracion /identity/admin/** y /identity/**.
                         .pathMatchers("/identity/me", "/identity/me/**").authenticated()
+                        // Información pública de un establecimiento (vitrina/exploración): sin autenticación.
+                        // Solo expone datos no sensibles de tenants activos. Antes de /tenant/admin/** y /tenant/**.
+                        .pathMatchers("/tenant/public/**").permitAll()
                         // Organizaciones del usuario (selector de tenant): cualquier autenticado, no por rol.
                         // Antes de las reglas /tenant/admin/** y /tenant/**.
                         .pathMatchers("/tenant/me/organizations").authenticated()
@@ -95,6 +98,9 @@ public class SecurityConfig {
                         // Reserva de citas: cualquier usuario autenticado (incluido GUEST_USER, sin calendar:read).
                         .pathMatchers("/scheduling/offerings/*/availability").authenticated()
                         .pathMatchers("/scheduling/appointments", "/scheduling/appointments/**").authenticated()
+                        // Subida de anexos de archivo previa a la reserva: cualquier autenticado (incl. GUEST_USER).
+                        // El servicio liga el anexo al cliente y valida la descarga (dueño del anexo o su tenant).
+                        .pathMatchers("/scheduling/requirement-files", "/scheduling/requirement-files/**").authenticated()
                         // Operacion del tenant (catalogo agendable y agenda): miembros con permisos de
                         // calendario -> TENANT_ADMIN y TENANT_PARTNER. El servicio destino restringe escritura.
                         .pathMatchers("/catalog/**").hasAnyAuthority(CALENDAR_READ, CALENDAR_WRITE)

@@ -1,10 +1,12 @@
 package co.com.hermes.calendar.bff.config;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.util.unit.DataSize;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
@@ -24,6 +26,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.util.List;
 
@@ -116,12 +119,23 @@ public class SecurityConfig {
     @Bean
     WebClient gatewayWebClient(
             GatewayProperties properties,
-            OAuth2AuthorizedClientManager authorizedClientManager
+            OAuth2AuthorizedClientManager authorizedClientManager,
+            @Value("${spring.codec.max-in-memory-size:16MB}") DataSize maxInMemorySize
     ) {
         ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2 = new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
         oauth2.setDefaultClientRegistrationId("hermes-web-client");
+        // El proxy reenvía la query string tal cual la entrega el navegador (ya codificada por
+        // request.getQueryString()). Con el modo por defecto (TEMPLATE_AND_VALUES), WebClient la
+        // volvería a codificar (%3A -> %253A), corrompiendo valores como las fechas ISO (los ':')
+        // y el 'sort' (la ','). En modo NONE se reenvía sin re-codificar, que es lo correcto aquí.
+        DefaultUriBuilderFactory uriFactory = new DefaultUriBuilderFactory(properties.baseUrl());
+        uriFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
         return WebClient.builder()
-                .baseUrl(properties.baseUrl())
+                .uriBuilderFactory(uriFactory)
+                // El WebClient bufferiza en memoria el cuerpo de respuesta al leerlo como byte[]. El default
+                // (256 KB) corta la descarga de anexos grandes. Este builder es nuevo y NO hereda el
+                // CodecCustomizer auto-configurado de spring.codec.max-in-memory-size, así que lo aplicamos aquí.
+                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize((int) maxInMemorySize.toBytes()))
                 .apply(oauth2.oauth2Configuration())
                 .build();
     }

@@ -12,6 +12,14 @@ server:
 spring:
   application:
     name: hermes-web-bff
+  servlet:
+    multipart:
+      # El BFF es un proxy puro: NO debe parsear multipart (consumiría el stream antes de reenviarlo).
+      # Así el cuerpo multipart se reenvía intacto (con su boundary) al gateway/scheduling.
+      enabled: false
+  codec:
+    # El WebClient del proxy bufferiza el cuerpo de respuesta en memoria (descarga de anexos hasta 10 MB).
+    max-in-memory-size: ${HERMES_BFF_MAX_IN_MEMORY_SIZE:16MB}
   security:
     oauth2:
       client:
